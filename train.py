@@ -7,11 +7,15 @@ import tensorflow as tf
 
 import nltk
 from nltk.stem import WordNetLemmatizer
+import requests
+import json
+
+
 
 lemmatizer = WordNetLemmatizer()
 
-intents = json.loads(open('intents.json').read())
-
+intents = requests.get("http://127.0.0.1:8000/json/").json()
+intents = intents[0]['intents']
 
 words = []
 classes = []

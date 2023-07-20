@@ -3,6 +3,7 @@ import random
 
 import nltk
 import numpy
+import requests
 from nltk.stem import SnowballStemmer
 from nltk.corpus import machado
 import pickle
@@ -13,13 +14,15 @@ STEMMER = SnowballStemmer("portuguese")
 
 IGNORE_LETTERS = [".", ';', '/', '?', '!', '"\"', ",", "...", "-", "(", ")", "_", "'", "_", "[", "]", "{", "}", "¡!"]
 
-intents = json.loads(open('TestChat/intents.json').read())
+intents = requests.get("http://127.0.0.1:8000/json/").json()
+print(intents)
+intents = intents[0]['intents']
 
-classes = pickle.load(open("TestChat/classes.pkl", "rb"))
+classes = pickle.load(open("classes.pkl", "rb"))
 
-words = pickle.load(open("TestChat/words.pkl", "rb"))
+words = pickle.load(open("words.pkl", "rb"))
 
-model = load_model('TestChat/chatbot_model.h5')
+model = load_model('chatbot_model.h5')
 print(words)
 
 
@@ -81,6 +84,10 @@ def get_response(intents_list, intents_json):
     for i in list_of_intents:
         if i['tag'] == tag:
             result = random.choice(i['responses'])
+            print(str(result))
+            myobj = {'resposta': str(result)}
+            req = requests.post('http://127.0.0.1:8000/respostas/', data={'resposta': str(result)})
+            print(req.status_code)
             break
     return result
 
